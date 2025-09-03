@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project 1 – CS180 Portfolio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      line-height: 1.6;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    h1, h2 {
+      color: #333;
+    }
+    .part {
+      margin-bottom: 50px;
+    }
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .gallery-item {
+      flex: 1 1 150px;
+      text-align: center;
+    }
+    .gallery-item img {
+      max-width: 100%;
+      height: auto;
+      border: 1px solid #ccc;
+      padding: 4px;
+      background: #fafafa;
+    }
+    .caption {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    a {
+      color: #007acc;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .back-link {
+      margin-top: 40px;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+  <h1>Project 1: Focal Length and Perspective (iPhone 12)</h1>
+  <p>
+    This project explores how zoom levels (0.5× to 1×) on the iPhone 12 affect perspective.  
+    Below are my results for Part 1 (selfies), Part 2 (architecture), and Part 3 (dolly zoom).
+  </p>
+
+  <!-- Part 1 -->
+  <div class="part">
+    <h2>Part 1: Selfie – The Wrong Way vs. The Right Way</h2>
+    <p>
+      I captured selfies at different zoom levels. The wide angle (0.5×) produces 
+      distortion, while stepping back and using higher zooms (closer to 1×) produces 
+      more natural portraits.
+    </p>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="IMG_6759.png" alt="Selfie at 0.5x">
+        <div class="caption">0.5×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="IMG_6760.png" alt="Selfie at 0.6x">
+        <div class="caption">0.6×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="IMG_6761.png" alt="Selfie at 0.7x">
+        <div class="caption">0.7×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="IMG_6762.png" alt="Selfie at 0.8x">
+        <div class="caption">0.8×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="IMG_6763.png" alt="Selfie at 0.9x">
+        <div class="caption">0.9×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="IMG_6764.png" alt="Selfie at 1x">
+        <div class="caption">1.0×</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Part 2 -->
+  <div class="part">
+    <h2>Part 2: Architectural Perspective Compression</h2>
+    <p>
+      I repeated the procedure for an architectural scene. Wider zooms exaggerate 
+      depth (0.5×), while higher zooms compress the scene (1×).
+    </p>
+    <div class="gallery">
+      <div class="gallery-item">
+        <img src="part2_05x.png" alt="Architecture at 0.5x">
+        <div class="caption">0.5×</div>
+      </div>
+      <div class="gallery-item">
+        <img src="part2_1x.png" alt="Architecture at 1x">
+        <div class="caption">1.0×</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Part 3 -->
+<!--   <div class="part">
+    <h2>Part 3: The Dolly Zoom</h2>
+    <p>
+      I recreated the <em>dolly zoom</em> effect by moving the camera and adjusting zoom 
+      simultaneously, so the subject remains the same size while the background 
+      stretches or compresses.
+    </p>
+    <img src="part3_dollyzoom.gif" alt="Dolly zoom animation">
+  </div>
+ -->
+  <a href="../index.html" class="back-link">← Back to Portfolio</a>
+</body>
+</html>
