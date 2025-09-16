@@ -166,12 +166,17 @@ rgb = multi_scale_align(b, g, r, levels=4, method="ncc")
           </tr>
         </thead>
         <tbody>
-          <tr><td>cathedral.jpg</td><td>(…)</td><td>(…)</td><td>NCC</td><td>—</td></tr>
-          <tr><td>monastery.jpg</td><td>(…)</td><td>(…)</td><td>L2</td><td>—</td></tr>
-          <tr><td>tobolsk.jpg</td><td>(…)</td><td>(…)</td><td>NCC</td><td>—</td></tr>
-          <tr><td>emir.tif</td><td>(…)</td><td>(…)</td><td>NCC</td><td>Different brightness per channel</td></tr>
-          <tr><td>…</td><td>(…)</td><td>(…)</td><td>…</td><td>…</td></tr>
-        </tbody>
+          <tr><td>emir.tif</td><td>(-24, -49)</td><td>(17, 57)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>italil.tif</td><td>(-21, -38)</td><td>(15, 39)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>monastery.jpg</td><td>(-2, 3)</td><td>(1, 6)</td><td>NCC (Single‑scale)</td><td>—</td></tr>
+          <tr><td>church.tif</td><td>(-4, -25)</td><td>(-8, 33)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>three_generations.tif</td><td>(-14, -53)</td><td>(-3, 58)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>lugano.tif</td><td>(16, -41)</td><td>(-13, 52)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>melons.tif</td><td>(-11, -82)</td><td>(4, 96)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>lastochikino.tif</td><td>(2, 3)</td><td>(-7, 78)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>tobolsk.jpg</td><td>(-3, -3)</td><td>(1, 4)</td><td>NCC (Single‑scale)</td><td>—</td></tr>
+          <tr><td>icon.tif</td><td>(-17, -41)</td><td>(5, 48)</td><td>NCC (Pyramid)</td><td>—</td></tr>
+          <tr><td>siren.tif</td><td>(6, -49)</td><td>(-18, 47)</td><td>NCC (Pyramid)</td><td>—</
       </table>
 
       <p>If any image failed to align, include a short explanation here (e.g., low texture, border artifacts, illumination changes).</p>
