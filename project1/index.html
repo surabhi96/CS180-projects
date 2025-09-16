@@ -41,23 +41,39 @@
       <tr><td>harvesters.tif</td><td>(-17, -60)</td><td>(-3, 65)</td><td>Multi-scale</td></tr>
     </tbody>
   </table>
+  <p>All offsets are integer pixel shifts that align B and R channels to G.</p>
 
   <h2>Results</h2>
-  <p>Below are the aligned images shown one below the other:</p>
 
-  <img src="outputs/emir_rgb.jpg" alt="emir.tif result">
-  <img src="outputs/italil_rgb.jpg" alt="italil.tif result">
-  <img src="outputs/monastery_rgb.jpg" alt="monastery.jpg result">
-  <img src="outputs/church_rgb.jpg" alt="church.tif result">
-  <img src="outputs/three_generations_rgb.jpg" alt="three_generations.tif result">
-  <img src="outputs/lugano_rgb.jpg" alt="lugano.tif result">
-  <img src="outputs/melons_rgb.jpg" alt="melons.tif result">
-  <img src="outputs/lastochikino_rgb.jpg" alt="lastochikino.tif result">
-  <img src="outputs/tobolsk_rgb.jpg" alt="tobolsk.jpg result">
-  <img src="outputs/icon_rgb.jpg" alt="icon.tif result">
-  <img src="outputs/siren_rgb.jpg" alt="siren.tif result">
-  <img src="outputs/self_portrait_rgb.jpg" alt="self_portrait.tif result">
-  <img src="outputs/harvesters_rgb.jpg" alt="harvesters.tif result">
+  <h3>Single-scale Alignment Results</h3>
+  <ul>
+    <li>Split the glass plate into three channels: B (reference), G, and R.</li>
+    <li>Exhaustively search over a fixed window of (dx, dy) displacements for G and R relative to B.</li>
+    <li>Crop borders to ignore artifacts, then compute SSD or NCC for each candidate displacement.</li>
+    <li>Select the displacement with the best score and stack the shifted channels into an RGB image.</li>
+  </ul>
+  <img src="results/monastery.jpg" alt="monastery.jpg result">
+  <img src="results/tobolsk.jpg" alt="tobolsk.jpg result">
+  <img src="results/cathedral.jpg" alt="tobolsk.jpg result">
+
+  <h3>Multi-scale Alignment Results</h3>
+  <ul>
+    <li>Split into B, G, and R channels and build Gaussian pyramids for each.</li>
+    <li>Start at the coarsest level, estimate displacement using SSD or NCC.</li>
+    <li>Scale the displacement by 2 and use it as the starting point at the next finer level.</li>
+    <li>Refine at each level until full resolution is reached, producing efficient and robust alignment for large images.</li>
+  </ul>
+  <img src="results/emir.jpg" alt="emir.tif result">
+  <img src="results/italil.jpg" alt="italil.tif result">
+  <img src="results/church.jpg" alt="church.tif result">
+  <img src="results/three_generations.jpg" alt="three_generations.tif result">
+  <img src="results/lugano.jpg" alt="lugano.tif result">
+  <img src="results/melons.jpg" alt="melons.tif result">
+  <img src="results/lastochikino.jpg" alt="lastochikino.tif result">
+  <img src="results/icon.jpg" alt="icon.tif result">
+  <img src="results/siren.jpg" alt="siren.tif result">
+  <img src="results/self_portrait.jpg" alt="self_portrait.tif result">
+  <img src="results/harvesters.jpg" alt="harvesters.tif result">
 
 </body>
 </html>
