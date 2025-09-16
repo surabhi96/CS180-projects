@@ -1,252 +1,122 @@
-# CS180 (CS280A): Project 1 starter Python code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CS180/CS280A Project 1 — Colorizing the Prokudin-Gorskii Photo Collection</title>
+  <style>
+    body {font-family: Arial, sans-serif; font-size:16px; line-height:1.6; margin:0; padding:20px; background:#fff; color:#000;}
+    img {max-width:100%; height:auto; display:block; margin:10px 0 0 0;}
+    figure {margin:20px 0;}
+    figcaption {font-size:0.9rem; color:#555; margin-top:4px;}
+    table {border-collapse: collapse; width:100%; margin:20px 0;}
+    th,td {border:1px solid #ccc; padding:6px 10px; text-align:left;}
+    thead th {background:#f1f5f9;}
+    ul {margin:10px 0 20px 20px;}
+  </style>
+</head>
+<body>
+  <h1>CS180/CS280A Project 1 — Colorizing the Prokudin-Gorskii Photo Collection</h1>
 
-# these are just some suggested libraries
-# instead of scikit-image you could use matplotlib and opencv to read, write, and display images
-import os
-import numpy as np
-import skimage as sk
-import skimage.io as skio
-from skimage.filters import sobel  
-from tifffile import imread
-import matplotlib.pyplot as plt
+  <h2>Offsets Table</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Image</th>
+        <th>B→G (dx, dy)</th>
+        <th>R→G (dx, dy)</th>
+        <th>Method</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>emir.tif</td><td>(-24, -49)</td><td>(17, 57)</td><td>Multi-scale</td></tr>
+      <tr><td>italil.tif</td><td>(-21, -38)</td><td>(15, 39)</td><td>Multi-scale</td></tr>
+      <tr><td>monastery.jpg</td><td>(-2, 3)</td><td>(1, 6)</td><td>Single-scale</td></tr>
+      <tr><td>church.tif</td><td>(-4, -25)</td><td>(-8, 33)</td><td>Multi-scale</td></tr>
+      <tr><td>three_generations.tif</td><td>(-14, -53)</td><td>(-3, 58)</td><td>Multi-scale</td></tr>
+      <tr><td>lugano.tif</td><td>(16, -41)</td><td>(-13, 52)</td><td>Multi-scale</td></tr>
+      <tr><td>melons.tif</td><td>(-11, -82)</td><td>(4, 96)</td><td>Multi-scale</td></tr>
+      <tr><td>lastochikino.tif</td><td>(2, 3)</td><td>(-7, 78)</td><td>Multi-scale</td></tr>
+      <tr><td>tobolsk.jpg</td><td>(-3, -3)</td><td>(1, 4)</td><td>Single-scale</td></tr>
+      <tr><td>icon.tif</td><td>(-17, -41)</td><td>(5, 48)</td><td>Multi-scale</td></tr>
+      <tr><td>siren.tif</td><td>(6, -49)</td><td>(-18, 47)</td><td>Multi-scale</td></tr>
+      <tr><td>self_portrait.tif</td><td>(-29, -79)</td><td>(8, 98)</td><td>Multi-scale</td></tr>
+      <tr><td>harvesters.tif</td><td>(-17, -60)</td><td>(-3, 65)</td><td>Multi-scale</td></tr>
+    </tbody>
+  </table>
+  <p>All offsets are integer pixel shifts that align B and R channels to G.</p>
 
-def shift(ref_im, ip_im, dx, dy):
-    """Return overlapping crops when ip_im is shifted by (dx,dy)."""
-    h, w = ref_im.shape[:2]
-    min_x = max(0, dx)  
-    max_x = min(w, w + dx)
-    min_y = max(0, dy)
-    max_y = min(h, h + dy)
-    if max_x <= min_x or max_y <= min_y:
-        return None, None
-    ref_im_new = ref_im[min_y:max_y, min_x:max_x].copy()
-    mov_y0 = min_y - dy
-    mov_y1 = max_y - dy
-    mov_x0 = min_x - dx
-    mov_x1 = max_x - dx
-    ip_im_new = ip_im[mov_y0:mov_y1, mov_x0:mov_x1].copy()
-    return ref_im_new, ip_im_new
+  <h2>Results</h2>
 
-def final_crop(del_x, del_y, src, canvas_like):
-    """Paste src into a canvas_like image at integer shift (del_x, del_y)."""
-    out = np.array(canvas_like, copy=True)
-    H, W = out.shape[:2]
-    h, w = src.shape[:2]
-    y_dst = max(0, del_y)
-    x_dst = max(0, del_x)
-    y_src = max(0, -del_y)
-    x_src = max(0, -del_x)
-    h_ov = min(H - y_dst, h - y_src)
-    w_ov = min(W - x_dst, w - x_src)
-    if h_ov > 0 and w_ov > 0:
-        out[y_dst:y_dst+h_ov, x_dst:x_dst+w_ov, ...] = \
-            src[y_src:y_src+h_ov, x_src:x_src+w_ov, ...]
-    return out
+  <h3>Single-scale Alignment Results</h3>
+  <ul>
+    <li>Took Green channel as reference as it normally has lower chromatic abberration according to past experience</li>
+    <li>Exhaustively searched over a fixed window of (dx=40pix, dy=40pix) displacements for B and R relative to G channel image.</li>
+    <li>I obtained poor results without cropping the image borders and then realized the source of noise and cropped borders(8%) to ignore artifacts.</li> 
+    <li> For each displacement, SSD (Sum of squared differences) and NCC (Normalized cross correlation) were used as a metric to evaluate image alignment quality on both native rgb images as well as on edge detected image.</li>
+  </ul>
+  <figure>
+    <img src="results/monastery.jpg" alt="monastery.jpg result">
+    <figcaption>monastery.jpg — Single-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/tobolsk.jpg" alt="tobolsk.jpg result">
+    <figcaption>tobolsk.jpg — Single-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/cathedral.jpg" alt="cathedral.jpg result">
+    <figcaption>cathedral.jpg — Single-scale alignment result</figcaption>
+  </figure>
 
-def inner_crop(a, frac=0.08):
-    """Drop a margin on all sides to ignore plate borders."""
-    h, w = a.shape[:2]
-    dy = int(h*frac)
-    dx = int(w*frac)
-    return a[dy:h-dy, dx:w-dx]
-
-def ncc(A, B):
-    """Normalized cross-correlation (higher is better)."""
-    A = A.astype(np.float32)
-    B = B.astype(np.float32)
-    A = A - A.mean()
-    B = B - B.mean()
-    denom = (np.linalg.norm(A) * np.linalg.norm(B)) 
-    if denom == 0:
-        return 0
-    return float((A*B).sum() / denom)
-
-def ssd(A,B):
-    diff = A.astype(np.float32) - B.astype(np.float32)
-    return float(np.mean(diff * diff))
-
-def estimate_translation(b,g,r,centroid_b=[0,0],centroid_r=[0,0], \
-                         window_xy=[40,40],method='ssd'):
-    # Use only edges 
-    # g_edges = sobel(g)
-    # b_edges = sobel(b)
-    # r_edges = sobel(r)
-    # Use pixel information
-    g_edges = g
-    b_edges = b
-    r_edges = r
-
-    max_x = window_xy[0]   
-    max_y = window_xy[1] 
-    # SSD: (dx, dy, score)
-    best_b_ssd = (0, 0, np.inf)  
-    best_r_ssd = (0, 0, np.inf)
-    # NCC: (dx, dy, score)
-    best_b_ncc = (0, 0, -1.0)  
-    best_r_ncc = (0, 0, -1.0)
-    best_b = best_b_ssd
-    best_r = best_r_ssd
-
-    for dx in range(centroid_b[0]-max_x, centroid_b[0]+max_x+1):
-        for dy in range(centroid_b[1]-max_y, centroid_b[1]+max_y+1):
-            G, B = shift(g_edges, b_edges, dx, dy)   
-            if G is not None:
-                s = ncc(inner_crop(G), inner_crop(B))
-                s_ssd = ssd(inner_crop(G), inner_crop(B))
-                if s > best_b_ncc[2]:
-                    best_b_ncc = (dx, dy, s)
-                if s_ssd < best_b_ssd[2]:
-                    best_b_ssd = (dx, dy, s_ssd)
-
-    for dx in range(centroid_r[0]-max_x, centroid_r[0]+max_x+1):
-        for dy in range(centroid_r[1]-max_y, centroid_r[1]+max_y+1):   
-            G, R = shift(g_edges, r_edges, dx, dy)
-            if G is not None:
-                s = ncc(inner_crop(G), inner_crop(R))
-                s_ssd = ssd(inner_crop(G), inner_crop(R))
-                if s > best_r_ncc[2]:
-                    best_r_ncc = (dx, dy, s)
-                if s_ssd < best_r_ssd[2]:
-                    best_r_ssd = (dx, dy, s_ssd)
-
-    if method == 'ncc':
-        best_b = best_b_ncc
-        best_r = best_r_ncc
-    else:
-        best_b = best_b_ssd
-        best_r = best_r_ssd
-
-    return best_b, best_r
-
-def single_scale_align(b,g,r,method='ssd'):   
-    best_b, best_r = estimate_translation(b,g,r)
-
-    dx_b, dy_b, _ = best_b
-    dx_r, dy_r, _ = best_r
-
-    print('Single scale delta_blue : ', dx_b, dy_b)
-    print('Single scale delta red : ', dx_r, dy_r)
-
-    b_new = final_crop(dx_b, dy_b, b, np.full_like(b, 0.0))
-    r_new = final_crop(dx_r, dy_r, r, np.full_like(r, 0.0))
-
-    return np.dstack([r_new, g, b_new])
-
-def get_gaussian_kernel(sigma, sz):
-    x = np.arange(-sz, sz+1, dtype=np.float32)
-    k = np.exp(-0.5*(x/sigma)**2)
-    k /= k.sum()
-    return k
-
-def pyr_down(im, sigma, radius):
-    img = im.astype(np.float32, copy=False)
-    gaussian_kernel = get_gaussian_kernel(sigma, radius)
-    r = len(gaussian_kernel) // 2
-    H, W = img.shape
-    # convolution in x direction 
-    ph = np.pad(img, ((0, 0), (r, r)), mode='reflect')
-    tmp = np.empty_like(img, dtype=np.float32)
-    for x in range(W):
-        window = ph[:, x:x+len(gaussian_kernel)]           
-        tmp[:, x] = np.tensordot(window, gaussian_kernel, axes=([1], [0])) 
-    # convolution in y direction 
-    pv = np.pad(tmp, ((r, r), (0, 0)), mode='reflect')
-    out = np.empty_like(tmp, dtype=np.float32)
-    for y in range(H):
-        window = pv[y:y+len(gaussian_kernel), :]            
-        out[y, :] = np.tensordot(gaussian_kernel, window, axes=([0], [0]))  
-    # remove every other row and column to return the downsized image
-    return out[::2, ::2]
-
-def multi_scale_align(b, g, r, pyr_levels=4, sigma=1.0, gaussian_sz=3, \
-                      base_window=40, method='ncc'):
-    # building pyramids
-    b_pyr = [b.astype(np.float32, copy=False)]
-    g_pyr = [g.astype(np.float32, copy=False)]
-    r_pyr = [r.astype(np.float32, copy=False)]
-    for _ in range(1, pyr_levels):
-        b_pyr.append(pyr_down(b_pyr[-1], sigma, gaussian_sz))
-        g_pyr.append(pyr_down(g_pyr[-1], sigma, gaussian_sz))
-        r_pyr.append(pyr_down(r_pyr[-1], sigma, gaussian_sz))
-
-    centroid_b = (0, 0)
-    centroid_r = (0, 0)
-    best_b = (0, 0, -1.0)  
-    best_r = (0, 0, -1.0)
-
-    for level in reversed(range(pyr_levels)):
-        print('pyr level ', level)
-        # shrinking window at finer levels 
-        win = max(5, base_window // (2 ** (pyr_levels - 1 - level)))
-        window_xy = [win, win]
-
-        cx_b, cy_b = map(int, centroid_b)
-        cx_r, cy_r = map(int, centroid_r)
-
-        best_b, best_r = estimate_translation(
-            b_pyr[level], g_pyr[level], r_pyr[level],
-            centroid_b=[cx_b, cy_b], centroid_r=[cx_r, cy_r],
-            window_xy=window_xy, method=method
-        )
-
-        # scaling dx, dy by 2 when moving to the next finer image
-        centroid_b = (int(best_b[0]) * 2, int(best_b[1]) * 2)
-        centroid_r = (int(best_r[0]) * 2, int(best_r[1]) * 2)
-
-    dx_b, dy_b = int(best_b[0]), int(best_b[1])
-    dx_r, dy_r = int(best_r[0]), int(best_r[1])
-    print('Multi scale delta_blue : ', dx_b, dy_b)
-    print('Multi scale delta red : ', dx_r, dy_r)
-
-    b_new = final_crop(dx_b, dy_b, b.astype(np.float32, copy=False), np.zeros_like(b, dtype=np.float32))
-    r_new = final_crop(dx_r, dy_r, r.astype(np.float32, copy=False), np.zeros_like(r, dtype=np.float32))
-
-    return np.dstack([r_new, g, b_new])
-
-if __name__ == '__main__':
-    input_image_folder = 'cs180_proj1_data'
-    output_image_folder = 'results'
-    for dirpath, dirnames, filenames in os.walk(input_image_folder):
-        for fname in filenames:
-            if fname.endswith(('.tif', '.jpg')):
-                image_path = os.path.join(input_image_folder, fname)
-                fname_save = fname.split('.')[0] + '.jpg'
-                save_path = os.path.join(output_image_folder, fname_save)
-                print('Aligning ', fname)
-                # metric for alignment (ssd/ncc)
-                method = 'ncc'
-                # image_path = 'cs180_proj1_data/harvesters.tif'
-                # Multi scale pyramid alignment 
-                if image_path.endswith('.tif'):
-                    im = imread(image_path)
-                    im.astype(np.float32)
-                # Single scale alignment 
-                else:
-                    im = skio.imread(image_path)
-                    im = sk.img_as_float(im)
-                    
-                # compute the height of each part (just 1/3 of total)
-                height = np.floor(im.shape[0] / 3.0).astype(np.int32)
-
-                b = im[:height, :]
-                g = im[height:2*height, :]
-                r = im[2*height:3*height, :]
-                
-                if image_path.endswith('.tif'):
-                    print('Performing multi-scale alignment')
-                    rgb_new = multi_scale_align(b,g,r)
-                    disp = rgb_new.astype(np.float32) / 65535.0  
-                    disp = np.clip(disp, 0, 1)
-                    disp8 = (disp * 255).astype(np.uint8)
-                    # plt.imshow(disp)
-                    # plt.show()
-                else:
-                    print('Performing single scale alignment')
-                    rgb_new = single_scale_align(b,g,r,method=method)
-                    # skio.imshow(rgb_new)
-                    # skio.show()
-                    disp8 = (np.clip(rgb_new, 0, 1) * 255).astype(np.uint8)
-                print('file saving to ', save_path)
-                skio.imsave(save_path, disp8)
-                    
-                
+  <h3>Multi-scale Alignment Results</h3>
+  <ul>
+    <li>Created an image pyramid of total levels = 4. </li>
+    <li>To do this, images were first smoothed out of high frequency noise by applying Gaussian kernel. Since gaussian can be split, I have used a 1D Gaussian kernel for x and y direction (in x and y direction) of sigma=1 and width=7 </li>
+    <l1> After smoothing out the image (which reduces aliasing), we remove every other row and column to downsize the image by scale = 2. We do this exerise couple of more times until pyramids of all levels are computed.
+    <li>Starting at the coarsest level, I estimated image alignment with ncc as criterion.</li>
+    <li>The (dx,dy) obtained between R and G and B and G is scaled by 2 for the next level (less coarse image) and used it as the starting point at the next finer level.</li>
+    <li>As the levels get towards finer images, the window of the gaussian is reduced because we narrow down our belief of dx,dy</li>
+  </ul>
+  <figure>
+    <img src="results/emir.jpg" alt="emir.tif result">
+    <figcaption>emir.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/italil.jpg" alt="italil.tif result">
+    <figcaption>italil.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/church.jpg" alt="church.tif result">
+    <figcaption>church.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/three_generations.jpg" alt="three_generations.tif result">
+    <figcaption>three_generations.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/lugano.jpg" alt="lugano.tif result">
+    <figcaption>lugano.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/melons.jpg" alt="melons.tif result">
+    <figcaption>melons.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/lastochikino.jpg" alt="lastochikino.tif result">
+    <figcaption>lastochikino.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/icon.jpg" alt="icon.tif result">
+    <figcaption>icon.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/siren.jpg" alt="siren.tif result">
+    <figcaption>siren.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/self_portrait.jpg" alt="self_portrait.tif result">
+    <figcaption>self_portrait.tif — Multi-scale alignment result</figcaption>
+  </figure>
+  <figure>
+    <img src="results/harvesters.jpg" alt="harvesters.tif result">
+    <figcaption>harveste
