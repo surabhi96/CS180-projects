@@ -2,7 +2,7 @@
 
 # these are just some suggested libraries
 # instead of scikit-image you could use matplotlib and opencv to read, write, and display images
-
+import os
 import numpy as np
 import skimage as sk
 import skimage.io as skio
@@ -124,6 +124,9 @@ def single_scale_align(b,g,r,method='ssd'):
     dx_b, dy_b, _ = best_b
     dx_r, dy_r, _ = best_r
 
+    print('Single scale delta_blue : ', dx_b, dy_b)
+    print('Single scale delta red : ', dx_r, dy_r)
+
     b_new = final_crop(dx_b, dy_b, b, np.full_like(b, 0.0))
     r_new = final_crop(dx_r, dy_r, r, np.full_like(r, 0.0))
 
@@ -192,43 +195,58 @@ def multi_scale_align(b, g, r, pyr_levels=4, sigma=1.0, gaussian_sz=3, \
 
     dx_b, dy_b = int(best_b[0]), int(best_b[1])
     dx_r, dy_r = int(best_r[0]), int(best_r[1])
-    # print(dx_b, dy_b)
-    # print(dx_r,dy_r)
+    print('Multi scale delta_blue : ', dx_b, dy_b)
+    print('Multi scale delta red : ', dx_r, dy_r)
+
     b_new = final_crop(dx_b, dy_b, b.astype(np.float32, copy=False), np.zeros_like(b, dtype=np.float32))
     r_new = final_crop(dx_r, dy_r, r.astype(np.float32, copy=False), np.zeros_like(r, dtype=np.float32))
 
     return np.dstack([r_new, g, b_new])
 
 if __name__ == '__main__':
-    # image_path = 'cs180_proj1_data/cathedral.jpg'
-    # Single scale metric for alignment (ssd/ncc)
-    method = 'ncc'
-    image_path = 'cs180_proj1_data/harvesters.tif'
-    # Multi scale pyramid alignment 
-    if image_path.endswith('.tif'):
-        im = imread(image_path)
-        im.astype(np.float32)
-    # Single scale alignment 
-    else:
-        im = skio.imread(image_path)
-        im = sk.img_as_float(im)
-        
-    # compute the height of each part (just 1/3 of total)
-    height = np.floor(im.shape[0] / 3.0).astype(np.int32)
+    input_image_folder = 'cs180_proj1_data'
+    output_image_folder = 'results'
+    for dirpath, dirnames, filenames in os.walk(input_image_folder):
+        for fname in filenames:
+            if fname.endswith(('.tif', '.jpg')):
+                image_path = os.path.join(input_image_folder, fname)
+                fname_save = fname.split('.')[0] + '.jpg'
+                save_path = os.path.join(output_image_folder, fname_save)
+                print('Aligning ', fname)
+                # metric for alignment (ssd/ncc)
+                method = 'ncc'
+                # image_path = 'cs180_proj1_data/harvesters.tif'
+                # Multi scale pyramid alignment 
+                if image_path.endswith('.tif'):
+                    im = imread(image_path)
+                    im.astype(np.float32)
+                # Single scale alignment 
+                else:
+                    im = skio.imread(image_path)
+                    im = sk.img_as_float(im)
+                    
+                # compute the height of each part (just 1/3 of total)
+                height = np.floor(im.shape[0] / 3.0).astype(np.int32)
 
-    b = im[:height, :]
-    g = im[height:2*height, :]
-    r = im[2*height:3*height, :]
-    
-    if image_path.endswith('.tif'):
-        print('Performing multi-scale alignment')
-        rgb_new = multi_scale_align(b,g,r)
-        disp = rgb_new.astype(np.float32) / 65535.0   # normalise 16-bit to 0–1
-        disp = np.clip(disp, 0, 1)
-        plt.imshow(disp)
-        plt.show()
-    else:
-        print('Performing single scale alignment')
-        rgb_new = single_scale_align(b,g,r,method=method)
-        skio.imshow(rgb_new)
-        skio.show()
+                b = im[:height, :]
+                g = im[height:2*height, :]
+                r = im[2*height:3*height, :]
+                
+                if image_path.endswith('.tif'):
+                    print('Performing multi-scale alignment')
+                    rgb_new = multi_scale_align(b,g,r)
+                    disp = rgb_new.astype(np.float32) / 65535.0  
+                    disp = np.clip(disp, 0, 1)
+                    disp8 = (disp * 255).astype(np.uint8)
+                    # plt.imshow(disp)
+                    # plt.show()
+                else:
+                    print('Performing single scale alignment')
+                    rgb_new = single_scale_align(b,g,r,method=method)
+                    # skio.imshow(rgb_new)
+                    # skio.show()
+                    disp8 = (np.clip(rgb_new, 0, 1) * 255).astype(np.uint8)
+                print('file saving to ', save_path)
+                skio.imsave(save_path, disp8)
+                    
+                
