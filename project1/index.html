@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CS180/CS280A • Project 1 — Colorizing the Prokudin‑Gorskii Photo Collection</title>
+  <meta name="description" content="Programming Project #1 (proj1): Red‑Green‑Blue Example — Images of the Russian Empire: Colorizing the Prokudin‑Gorskii photo collection." />
+  <style>
+    :root {
+      --ink: #0f172a; /* slate-900 */
+      --muted: #475569; /* slate-600 */
+      --bg: #ffffff;
+      --accent: #1d4ed8; /* blue-700 */
+      --accent-2: #fcd34d; /* amber-300 */
+      --panel: #f8fafc; /* slate-50 */
+      --border: #e2e8f0; /* slate-200 */
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; color: var(--ink); background: var(--bg); font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+    header.hero { display: grid; grid-template-columns: 80px 1fr; gap: 16px; align-items: center; padding: 32px 0 8px; }
+    header .logo { width: 80px; height: 80px; border-radius: 50%; background: var(--panel); border: 1px solid var(--border); display: grid; place-items: center; font-weight: 700; color: #0b3d91; }
+    header h1 { margin: 0; font-size: 1.9rem; line-height: 1.25; }
+    header .sub { color: var(--muted); }
+    .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); font-size: 0.9rem; }
+    nav.toc { position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,0.92); backdrop-filter: saturate(1.1) blur(4px); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    nav.toc .inner { display: flex; flex-wrap: wrap; gap: 14px 18px; padding: 10px 24px; max-width: 1100px; margin: 0 auto; }
+    nav.toc a { color: var(--muted); font-weight: 500; }
+    section { padding: 36px 0; border-bottom: 1px dashed var(--border); }
+    section:last-of-type { border-bottom: 0; }
+    h2 { margin: 0 0 12px; font-size: 1.5rem; }
+    h3 { margin: 18px 0 8px; font-size: 1.2rem; }
+    p { margin: 12px 0; }
+    .grid { display: grid; gap: 16px; }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+    figure { margin: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    figure img { width: 100%; height: auto; display: block; }
+    figure figcaption { padding: 8px 10px; font-size: 0.95rem; color: var(--muted); border-top: 1px solid var(--border); }
+    table { border-collapse: collapse; width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--border); text-align: left; }
+    thead th { background: #f1f5f9; font-weight: 600; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; background: #0f172a0d; border: 1px solid var(--border); border-radius: 8px; }
+    code { padding: 2px 6px; }
+    pre { padding: 12px; overflow: auto; }
+    details { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+    summary { cursor: pointer; font-weight: 600; }
+    .badge { background: var(--accent); color: white; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; margin-left: 6px; }
+    .note { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; padding: 10px 12px; border-radius: 10px; }
+    footer { color: var(--muted); padding: 40px 0 20px; }
+    @media (max-width: 800px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+      header.hero { grid-template-columns: 56px 1fr; }
+      header .logo { width: 56px; height: 56px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div class="logo" title="Replace with Berkeley logo image if desired">UCB</div>
+      <div>
+        <h1>Programming Project #1 (proj1)<span class="badge">CS180 / CS280A</span></h1>
+        <div class="sub">Intro to Computer Vision &amp; Computational Photography — <strong>Red‑Green‑Blue Example</strong></div>
+        <div class="sub">Images of the Russian Empire: Colorizing the Prokudin‑Gorskii photo collection</div>
+        <div class="chip">Due: <strong>September 12, 2025</strong> at 11:59 PM</div>
+      </div>
+    </header>
+  </div>
+
+  <nav class="toc">
+    <div class="inner">
+      <a href="#background">Background</a>
+      <a href="#overview">Overview</a>
+      <a href="#method">Method</a>
+      <a href="#single">Single‑Scale Results</a>
+      <a href="#pyramid">Multi‑Scale (Pyramid) Results</a>
+      <a href="#bells">Bells &amp; Whistles</a>
+      <a href="#deliverables">Deliverables</a>
+      <a href="#rubric">Grading Rubric</a>
+      <a href="#faq">Common Questions</a>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <section id="background">
+      <h2>Background</h2>
+      <p><em>Sergei Mikhailovich Prokudin‑Gorskii</em> (1863–1944) pioneered early color photography by capturing three exposures (through R, G, and B filters) onto a single glass plate. The Library of Congress digitized these glass‑plate negatives, and our goal is to recompose them into plausible modern RGB photographs.</p>
+    </section>
+
+    <section id="overview">
+      <h2>Overview</h2>
+      <p>Given a vertically stacked B‑G‑R glass‑plate scan, we split into channels, align <strong>G</strong> and <strong>R</strong> to <strong>B</strong> using either L2 (SSD) or NCC, then compose an RGB image. We start with low‑res JPGs (e.g., <code>monastery.jpg</code>, <code>cathedral.jpg</code>) and scale up to the original high‑res TIFFs using a coarse‑to‑fine image pyramid.</p>
+      <div class="note">Tip: TIFFs can be 16‑bit. Convert to float in [0,1] for display and to <code>uint8</code> for saving JPGs.</div>
+    </section>
+
+    <section id="method">
+      <h2>Method</h2>
+      <h3>Single‑Scale Alignment</h3>
+      <p>Exhaustively search a window of displacements (e.g., <code>[-15, +15]</code>) and score via L2 or NCC on an inner crop (to ignore borders). Return the best displacement.</p>
+      <pre><code># pseudo‑usage
+rgb = single_scale_align(b, g, r, method="ncc", window=15)
+      </code></pre>
+      <h3>Multi‑Scale (Pyramid) Alignment</h3>
+      <p>Build Gaussian pyramids for each channel. Starting from the coarsest level, estimate a shift, up‑scale it (×2) as initialization for the next level, and refine at full resolution.</p>
+      <pre><code># pseudo‑usage
+rgb = multi_scale_align(b, g, r, levels=4, method="ncc")
+      </code></pre>
+      <h3>Implementation Notes</h3>
+      <ul>
+        <li>Convert images to <code>float32</code> in [0,1].</li>
+        <li>Use <code>np.roll</code> / cropping for shifts; ignore borders while scoring.</li>
+        <li>Vectorize your metric; avoid Python loops where possible.</li>
+        <li>For speed: shrink search window as levels get finer; use separable Gaussian blur.</li>
+      </ul>
+    </section>
+
+    <section id="single">
+      <h2>Single‑Scale Alignment — Results</h2>
+      <div class="grid cols-3">
+        <figure>
+          <img src="outputs/single/monastery_rgb.jpg" alt="Monastery single‑scale result (placeholder)" />
+          <figcaption><strong>monastery.jpg</strong> — dx,dy (B→G): <code>(…)</code>, (R→G): <code>(…)</code> — metric: NCC</figcaption>
+        </figure>
+        <figure>
+          <img src="outputs/single/cathedral_rgb.jpg" alt="Cathedral single‑scale result (placeholder)" />
+          <figcaption><strong>cathedral.jpg</strong> — dx,dy: …</figcaption>
+        </figure>
+        <figure>
+          <img src="outputs/single/tobolsk_rgb.jpg" alt="Tobolsk single‑scale result (placeholder)" />
+          <figcaption><strong>tobolsk.jpg</strong> — dx,dy: …</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="pyramid">
+      <h2>Multi‑Scale Pyramid — Results &amp; Offsets</h2>
+      <p>Aligned all provided images with NCC/SSD; offsets are measured as integer pixel shifts that align <em>moving</em> (B/R) to the <em>reference</em> (G).</p>
+      <div class="grid cols-3">
+        <figure>
+          <img src="outputs/pyramid/emir_rgb.jpg" alt="Emir of Bukhara result (placeholder)" />
+          <figcaption><strong>emir.tif</strong> (pyramid): dx,dy … — NCC</figcaption>
+        </figure>
+        <figure>
+          <img src="outputs/pyramid/train_rgb.jpg" alt="Train result (placeholder)" />
+          <figcaption><strong>train.tif</strong> — dx,dy …</figcaption>
+        </figure>
+        <figure>
+          <img src="outputs/pyramid/harvesters_rgb.jpg" alt="Harvesters result (placeholder)" />
+          <figcaption><strong>harvesters.tif</strong> — dx,dy …</figcaption>
+        </figure>
+      </div>
+
+      <h3>Offsets Table</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>B→G (dx, dy)</th>
+            <th>R→G (dx, dy)</th>
+            <th>Metric</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>cathedral.jpg</td><td>(…)</td><td>(…)</td><td>NCC</td><td>—</td></tr>
+          <tr><td>monastery.jpg</td><td>(…)</td><td>(…)</td><td>L2</td><td>—</td></tr>
+          <tr><td>tobolsk.jpg</td><td>(…)</td><td>(…)</td><td>NCC</td><td>—</td></tr>
+          <tr><td>emir.tif</td><td>(…)</td><td>(…)</td><td>NCC</td><td>Different brightness per channel</td></tr>
+          <tr><td>…</td><td>(…)</td><td>(…)</td><td>…</td><td>…</td></tr>
+        </tbody>
+      </table>
+
+      <p>If any image failed to align, include a short explanation here (e.g., low texture, border artifacts, illumination changes).</p>
+    </section>
+
+    <section id="bells">
+      <h2>Bells &amp; Whistles</h2>
+      <div class="grid cols-2">
+        <div class="card">
+          <h3>Automatic Cropping</h3>
+          <p>Detect borders via channel disagreement or edge density, then crop to the maximal consistent interior. <em>Before→After</em> examples below.</p>
+          <figure>
+            <img src="outputs/bw/crop_before.jpg" alt="crop before placeholder" />
+            <figcaption>Before</figcaption>
+          </figure>
+          <figure>
+            <img src="outputs/bw/crop_after.jpg" alt="crop after placeholder" />
+            <figcaption>After</figcaption>
+          </figure>
+        </div>
+        <div class="card">
+          <h3>Automatic Contrast &amp; White Balance</h3>
+          <p>Percentile stretch per channel (1–99%) and simple gray‑world white balance. Show side‑by‑side comparisons.</p>
+          <figure>
+            <img src="outputs/bw/wb_before.jpg" alt="wb before placeholder" />
+            <figcaption>Before</figcaption>
+          </figure>
+          <figure>
+            <img src="outputs/bw/wb_after.jpg" alt="wb after placeholder" />
+            <figcaption>After</figcaption>
+          </figure>
+        </div>
+      </div>
+      <h3>Other Ideas</h3>
+      <ul>
+        <li>Better color mapping between BGR glass channels and RGB space.</li>
+        <li>Gradient/edge‑based alignment for brightness‑mismatched scenes.</li>
+        <li>Small rotations/scale (similarity transform) in pyramid search.</li>
+        <li>Apply pipeline to astronomical or multispectral datasets.</li>
+      </ul>
+    </section>
+
+    <section id="deliverables">
+      <h2>Deliverables</h2>
+      <ul>
+        <li>Code + this project webpage (GitHub Pages).</li>
+        <li>Single‑scale results on low‑res images (with offsets).</li>
+        <li>Pyramid results on all example images (with offsets).</li>
+        <li>Additional examples from the LoC collection.</li>
+        <li>Failures &amp; brief diagnoses.</li>
+        <li>Any bells &amp; whistles, with before/after evidence.</li>
+      </ul>
+      <p>Submit your webpage URL to the class gallery and include it in Gradescope. <strong>Do not upload image assets to Gradescope</strong>.</p>
+    </section>
+
+    <section id="rubric">
+      <h2>Grading Rubric (Summary)</h2>
+      <details open>
+        <summary>CS180</summary>
+        <ul>
+          <li><strong>Single‑scale alignment (60 pts)</strong>: quality on cathedral/monastery/tobolsk; plus presentation quality.</li>
+          <li><strong>Multi‑scale alignment (40 pts)</strong>: ≤1/14 defects for full credit; plus presentation depth.</li>
+        </ul>
+      </details>
+      <details>
+        <summary>CS280A</summary>
+        <ul>
+          <li><strong>Single‑scale (40)</strong>, <strong>Pyramid (30)</strong>, <strong>B&amp;W (30, 6 per item)</strong> — with strong explanations &amp; visuals per item.</li>
+        </ul>
+      </details>
+    </section>
+
+    <section id="faq">
+      <h2>Common Questions</h2>
+      <h3>What’s a good alignment?</h3>
+      <p>Since one failure is allowed for full credit, aim for strong results on most images and explain any outliers.</p>
+      <h3>Can I use more advanced metrics?</h3>
+      <p>Yes — but still document baseline NCC/L2 results for grading.</p>
+    </section>
+
+    <section id="appendix">
+      <h2>Appendix — Tips</h2>
+      <ul>
+        <li>Normalize ranges: TIFF (uint16) → float [0,1] for display; save JPG as uint8.</li>
+        <li>Ignore borders while scoring; compute metrics on interior crops.</li>
+        <li>One parameter set for all images; avoid per‑image hand‑tuning.</li>
+        <li>Target under ~1 minute per full‑res image; profile and vectorize.</li>
+      </ul>
+      <pre><code># Example: robust display conversion in Python
+view = np.clip(rgb_new.astype(np.float32) / 65535.0, 0, 1)
+plt.imshow(view)
+plt.show()
+      </code></pre>
+    </section>
+
+    <footer class="wrap">
+      <p>© 2025 • CS180/CS280A • University of California, Berkeley</p>
+      <p style="font-size:0.9rem">Replace the circle "UCB" above with an official Berkeley logo image if desired (e.g., <code>&lt;img src="assets/berkeley-logo.png" alt="UC Berkeley" /&gt;</code>).</p>
+    </footer>
+  </main>
+</body>
+</html>
