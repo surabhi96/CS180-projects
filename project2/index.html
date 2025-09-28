@@ -94,18 +94,15 @@ def convolve_2d_optim(im, kernal):
   and then sharpened again. The sharpening step enhances the blurred image slightly, but it cannot fully recover 
   the original fine details that were lost during blurring. Shapening only amplifies the edges and sometimes might .
 </p>
-
-<div style="display:flex; gap:15px; justify-content:center;">
-  <figure>
-    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="250" height="250">
+<div>
+    <img src="data/nutmeg.jpg" alt="DoG filters" width="600">
     <figcaption>Original</figcaption>
-  </figure>
-  <figure>
-    <img src="results/nutmeg_sharpen.jpeg" alt="Nutmeg sharpened" width="250" height="250">
+  </div>
+  <div>
+    <img src="results/nutmeg_sharpen.jpeg" alt="DoG filtered image" width="1000">
     <figcaption>Sharpened (after blur)</figcaption>
-  </figure>
-</div>
-
+  </div>
+  
   <h3>Part 2.2: Hybrid Images</h3>
   <p>By combining low frequencies of one image and high frequencies of another, hybrid images were created. 
     The factor that helped the most in creating a good high and low frequency image was setting different sigma 
@@ -130,8 +127,12 @@ def convolve_2d_optim(im, kernal):
 
   <h3>Part 2.3: Gaussian and Laplacian Stacks</h3>
   <p>Implemented Gaussian and Laplacian stacks for multi-resolution blending.</p>
-  <img src="results/pyr1.jpeg" alt="Stack example">
-  <img src="results/pyr2.jpeg" alt="Stack example">
+   <div>
+    <img src="results/pyr1.jpeg" alt="DoG filters" width="600">
+  </div>
+  <div>
+    <img src="results/pyr2.jpeg" alt="DoG filtered image" width="1000">
+  </div>
 
   <h3>Part 2.4: Multiresolution Blending (The Oraple)</h3>
   <p>Blended two different kinds of pots seamlessly using Laplacian stacks and Gaussian stacks. </p>
