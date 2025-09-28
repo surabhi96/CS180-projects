@@ -70,7 +70,7 @@ def convolve_2d_optim(im, kernal):
 
   <h3>Part 1.2: Finite Difference Operator</h3>
   <p>Computed partial derivatives in X and Y of the cameraman image using Dx and Dy respectively, which was then used to compute gradient magnitude and binarized edge map.</p>
-  <img src="results/cameraman_grad.jpeg" alt="Gradient magnitude">
+  <img src="results/cameraman_grad.jpeg" alt="Gradient magnitude" style="width:100%;>
 
   <h3>Part 1.3: Derivative of Gaussian (DoG) Filter</h3>
   <p>Smoothed the image with a Gaussian filter, then computed derivatives using DoG filters. The improvements over the result of 1.2 include removal of high frequency noise using gaussian before convolution which results in smoother/prominent edges and less noise. Note: the evaluations above and below are done with a threshold of 50 pixels to create the binary edge map.</p>
