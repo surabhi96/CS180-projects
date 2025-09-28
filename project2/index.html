@@ -81,7 +81,9 @@ def convolve_2d_optim(im, kernal):
   <p>Smoothed the image with a Gaussian filter, then computed derivatives using DoG filters. 
     The improvements over the result of 1.2 include removal of high frequency noise using 
     gaussian before convolution which results in smoother/prominent edges and less noise. 
-    Note: the evaluations above and below are done with a threshold of 50 pixels to create the binary edge map.</p>
+    Note: the evaluations above and below are done with a threshold of 50 pixels to create the binary edge map.
+  Additionally, the images with DOG filter were found to be the same as applying gaussian filtering first followed by
+  applying the derivative filter and is thus not visualized. This can however be verified from the codebase.</p>
   <div>
     <img src="results/dog_filter.jpeg" alt="DoG filters" width="600">
   </div>
