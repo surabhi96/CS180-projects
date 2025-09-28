@@ -73,9 +73,9 @@ def convolve_2d_optim(im, kernal):
   <img src="results/cameraman_grad.jpeg" alt="Gradient magnitude">
 
   <h3>Part 1.3: Derivative of Gaussian (DoG) Filter</h3>
-  <p>Smoothed the image with a Gaussian filter, then computed derivatives using DoG filters. The improvements over the result of 1.2 include removal of high frequency noise using gaussian before convolution which results in smoother/prominent edges and less noise.</p>
+  <p>Smoothed the image with a Gaussian filter, then computed derivatives using DoG filters. The improvements over the result of 1.2 include removal of high frequency noise using gaussian before convolution which results in smoother/prominent edges and less noise. Note: the evaluations above and below are done with a threshold of 50 pixels to create the binary edge map.</p>
   <img src="results/dog_filter.jpeg" alt="DoG filters">
-  <img src="results/dog_filtered_image.jpeg" alt="Gradient magnitude">
+  <img src="results/dog_filtered_image.jpeg" alt="Gradient magnitude" width="500" height="250">
 
 </div>
 
@@ -93,11 +93,11 @@ def convolve_2d_optim(im, kernal):
 
 <div style="display:flex; gap:15px; justify-content:center;">
   <figure>
-    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="250">
+    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="250" height="250">
     <figcaption>Original</figcaption>
   </figure>
   <figure>
-    <img src="results/nutmeg_sharpen.png" alt="Nutmeg sharpened" width="250">
+    <img src="results/nutmeg_sharpen.png" alt="Nutmeg sharpened" width="250" height="250">
     <figcaption>Sharpened (after blur)</figcaption>
   </figure>
 </div>
