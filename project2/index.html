@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CS180 Project: Fun with Filters and Frequencies!</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+    h1, h2, h3 { margin-top: 40px; }
+    img { max-width: 400px; margin: 10px; border: 1px solid #ccc; }
+    .section { margin-bottom: 60px; }
+  </style>
+</head>
+<body>
+
+<h1>CS180 Project: Fun with Filters and Frequencies!</h1>
+<p>This project explores 2D convolution, filtering, frequencies, and multi-resolution blending. 
+All results shown below were implemented from scratch in Python.</p>
+
+<div class="section">
+  <h2>Part 1: Fun with Filters</h2>
+
+  <h3>Part 1.1: Convolutions from Scratch!</h3>
+  <p>Implemented convolution with four loops, then two loops, and compared against <code>scipy.signal.convolve2d</code>.
+     Below is an example using a 9x9 box filter and finite difference operators.</p>
+  <img src="results/diff_op.png" alt="Finite Difference Operator">
+
+  <h3>Part 1.2: Finite Difference Operator</h3>
+  <p>We computed partial derivatives in X and Y of the cameraman image, then gradient magnitude and binarized edge maps.</p>
+  <img src="results/cameraman_dx.png" alt="dx">
+  <img src="results/cameraman_dy.png" alt="dy">
+  <img src="results/cameraman_grad.png" alt="Gradient magnitude">
+
+  <h3>Part 1.3: Derivative of Gaussian (DoG) Filter</h3>
+  <p>We smoothed the image with a Gaussian filter, then computed derivatives using DoG filters.</p>
+  <img src="results/dog_filter.png" alt="DoG filters">
+
+</div>
+
+<div class="section">
+  <h2>Part 2: Fun with Frequencies!</h2>
+
+  <h3>Part 2.1: Image Sharpening</h3>
+  <p>We implemented unsharp masking to sharpen images by enhancing their high frequencies.</p>
+  <img src="results/taj.png" alt="Taj sharpened">
+
+  <h3>Part 2.2: Hybrid Images</h3>
+  <p>By combining low frequencies of one image and high frequencies of another, we created hybrid images.</p>
+  <img src="results/teaser.png" alt="Hybrid teaser">
+
+  <h3>Part 2.3: Gaussian and Laplacian Stacks</h3>
+  <p>We implemented Gaussian and Laplacian stacks for multi-resolution blending.</p>
+  <img src="results/lincoln.png" alt="Stack example">
+
+  <h3>Part 2.4: Multiresolution Blending (The Oraple)</h3>
+  <p>We blended an apple and an orange seamlessly using Laplacian stacks and Gaussian mask stacks.</p>
+  <img src="results/oraple.png" alt="Oraple result">
+</div>
+
+</body>
+</html>
