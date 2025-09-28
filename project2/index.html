@@ -97,26 +97,37 @@ def convolve_2d_optim(im, kernal):
 
 <div style="display:flex; gap:15px; justify-content:center;">
   <figure>
-    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="500" height="500">
+    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="250" height="250">
     <figcaption>Original</figcaption>
   </figure>
   <figure>
-    <img src="results/nutmeg_sharpen.jpeg" alt="Nutmeg sharpened" width="500" height="500">
+    <img src="results/nutmeg_sharpen.jpeg" alt="Nutmeg sharpened" width="250" height="250">
     <figcaption>Sharpened (after blur)</figcaption>
   </figure>
 </div>
 
   <h3>Part 2.2: Hybrid Images</h3>
-  <p>By combining low frequencies of one image and high frequencies of another, we created hybrid images.</p>
-  <img src="results/teaser.png" alt="Hybrid teaser">
+  <p>By combining low frequencies of one image and high frequencies of another, hybrid images were created. 
+    The factor that helped the most in creating a good high and low frequency image was setting different sigma 
+    values (for convolution) to obtain each of these images Additionally, having different alpha values for the low 
+    and high frequency image was helpful too. For the first image, sigma_low_freq = 7, sigma_high_freq = 5; 
+    For second image, sigma_low_freq = 2, sigma_high_freq = 2. Additionally, the frequency domain of the images are shown. 
+    One can observe that the low frequency images contain the lower frequencies while the high frequency image contains higher frequencies.
+    The occasional high frequency elements in the low frequency image spectrum could be a result of the black borders that are obtained
+    from running the image alignment procedure. </p>
+  <img src="results/hybrid1.jpeg" alt="Hybrid teaser">
+  <img src="results/hybrid2.jpeg" alt="Hybrid teaser">
+  <img src="results/freq1.jpeg" alt="Hybrid teaser">
+  <img src="results/freq2.jpeg" alt="Hybrid teaser">
 
   <h3>Part 2.3: Gaussian and Laplacian Stacks</h3>
-  <p>We implemented Gaussian and Laplacian stacks for multi-resolution blending.</p>
-  <img src="results/lincoln.png" alt="Stack example">
+  <p>Implemented Gaussian and Laplacian stacks for multi-resolution blending.</p>
+  <img src="results/pyr1.jpeg" alt="Stack example">
+  <img src="results/pyr2.jpeg" alt="Stack example">
 
   <h3>Part 2.4: Multiresolution Blending (The Oraple)</h3>
-  <p>We blended an apple and an orange seamlessly using Laplacian stacks and Gaussian mask stacks.</p>
-  <img src="results/oraple.png" alt="Oraple result">
+  <p>Blended two different kinds of pots seamlessly using Laplacian stacks and Gaussian stacks. </p>
+  <img src="results/blend.jpeg" alt="Oraple result">
 </div>
 
 </body>
