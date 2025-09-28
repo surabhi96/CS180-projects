@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>CS180 Project: Fun with Filters and Frequencies!</title>
+  <title>Fun with Filters and Frequencies</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
     h1, h2, h3 { margin-top: 40px; }
@@ -12,27 +12,70 @@
 </head>
 <body>
 
-<h1>CS180 Project: Fun with Filters and Frequencies!</h1>
-<p>This project explores 2D convolution, filtering, frequencies, and multi-resolution blending. 
-All results shown below were implemented from scratch in Python.</p>
+<h1>Fun with Filters and Frequencies!</h1>
+<!-- <p>This project explores 2D convolution, filtering, frequencies, and multi-resolution blending. 
+All results shown below were implemented from scratch in Python.</p> -->
 
 <div class="section">
   <h2>Part 1: Fun with Filters</h2>
 
   <h3>Part 1.1: Convolutions from Scratch!</h3>
-  <p>Implemented convolution with four loops, then two loops, and compared against <code>scipy.signal.convolve2d</code>.
-     Below is an example using a 9x9 box filter and finite difference operators.</p>
-  <img src="results/diff_op.png" alt="Finite Difference Operator">
+<p>
+  Implemented convolution with four loops, then two loops (using NumPy elementwise multiplication for the kernel),
+  and finally compared against the built-in <code>scipy.signal.convolve2d</code>. Although the results of these convolutions look the same, the compute time varied dramatically. Below are the results shown for a 15x15 convolution which provided a more perceptable blur. 
+  Time taken for (4 for loop) custom convolve:  573.5813066959381 seconds
+  Time taken for (2 for loop) custom convolve:  30.86306118965149 seconds
+  Time taken for signal.convolve2d convolve:  3.6357760429382324 seconds
+</p>
+
+<h4>Custom Convolution (4 loops)</h4>
+<pre><code>
+def convolve_2d(im, kernal):
+    im_h, im_w = im.shape
+    k_h, k_w = kernal.shape
+    p_h, p_w = k_h // 2, k_w // 2   
+
+    padded = np.pad(im, ((p_h, p_h), (p_w, p_w)), mode="constant", constant_values=0)
+    output_im = np.zeros_like(im, dtype=np.float32)
+
+    for y in range(0, im_h):
+        for x in range(0, im_w):
+            res = 0.0
+            for i in range(0, k_h):
+                for j in range(0, k_w):
+                    res += kernal[i,j] * padded[y+i,x+j]
+            output_im[y,x] = res
+    return output_im
+</code></pre>
+
+<h4>Custom Convolution (2 loops)</h4>
+<pre><code>
+def convolve_2d_optim(im, kernal):
+    im_h, im_w = im.shape
+    k_h, k_w = kernal.shape
+    p_h, p_w = k_h // 2, k_w // 2   
+
+    padded = np.pad(im, ((p_h, p_h), (p_w, p_w)), mode="constant", constant_values=0)
+    output_im = np.zeros_like(im, dtype=np.float32)
+
+    for y in range(0, im_h):
+        for x in range(0, im_w):
+            window = padded[y:y+k_h, x:x+k_w]
+            output_im[y,x] = np.sum(kernal * window)
+    return output_im
+</code></pre>
+
+<p>Below is the result of applying a 15x15 box filter using each method.</p>
+<img src="results/blur.jpeg" alt="box filter convolution">
 
   <h3>Part 1.2: Finite Difference Operator</h3>
-  <p>We computed partial derivatives in X and Y of the cameraman image, then gradient magnitude and binarized edge maps.</p>
-  <img src="results/cameraman_dx.png" alt="dx">
-  <img src="results/cameraman_dy.png" alt="dy">
-  <img src="results/cameraman_grad.png" alt="Gradient magnitude">
+  <p>Computed partial derivatives in X and Y of the cameraman image using Dx and Dy respectively, which was then used to compute gradient magnitude and binarized edge map.</p>
+  <img src="results/cameraman_grad.jpeg" alt="Gradient magnitude">
 
   <h3>Part 1.3: Derivative of Gaussian (DoG) Filter</h3>
-  <p>We smoothed the image with a Gaussian filter, then computed derivatives using DoG filters.</p>
-  <img src="results/dog_filter.png" alt="DoG filters">
+  <p>Smoothed the image with a Gaussian filter, then computed derivatives using DoG filters. The improvements over the result of 1.2 include removal of high frequency noise using gaussian before convolution which results in smoother/prominent edges and less noise.</p>
+  <img src="results/dog_filter.jpeg" alt="DoG filters">
+  <img src="results/dog_filtered_image.jpeg" alt="Gradient magnitude">
 
 </div>
 
@@ -40,8 +83,24 @@ All results shown below were implemented from scratch in Python.</p>
   <h2>Part 2: Fun with Frequencies!</h2>
 
   <h3>Part 2.1: Image Sharpening</h3>
-  <p>We implemented unsharp masking to sharpen images by enhancing their high frequencies.</p>
+  <p>Implemented unsharp masking to sharpen images by enhancing their high frequencies.</p>
   <img src="results/taj.png" alt="Taj sharpened">
+  <p>
+  To evaluate the sharpening approach, the original image was blurred with a Gaussian filter, 
+  and then sharpened again. The sharpening step enhances the blurred image slightly, but it cannot fully recover 
+  the original fine details that were lost during blurring. Shapening only amplifies the edges and sometimes might .
+</p>
+
+<div style="display:flex; gap:15px; justify-content:center;">
+  <figure>
+    <img src="data/nutmeg.jpg" alt="Nutmeg original" width="250">
+    <figcaption>Original</figcaption>
+  </figure>
+  <figure>
+    <img src="results/nutmeg_sharpen.png" alt="Nutmeg sharpened" width="250">
+    <figcaption>Sharpened (after blur)</figcaption>
+  </figure>
+</div>
 
   <h3>Part 2.2: Hybrid Images</h3>
   <p>By combining low frequencies of one image and high frequencies of another, we created hybrid images.</p>
