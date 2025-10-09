@@ -27,8 +27,9 @@ All results shown below were implemented from scratch in Python.</p> -->
 <img src="data/left.jpeg" alt="left image">
 <img src="data/middle.jpeg" alt="middle image">
 <img src="data/right.jpeg" alt="right image">
-
-<h3>A.2: Recover Homographies</h3>
+</div>
+<div>
+<h2>A.2: Recover Homographies</h2>
 <p>To compute the homography between two images, the correspondences are first marked manually and stored in a txt file.</p>
 <img src="results/corresps_left.jpeg" alt="Gradient magnitude">
 <img src="results/corresps_right.jpeg" alt="Gradient magnitude">
@@ -51,20 +52,22 @@ All results shown below were implemented from scratch in Python.</p> -->
     H /= H[-1,-1]
     return H
 </code></pre>
-<h4>Estimated homography between left and mid image</h4>
+<h3>Estimated homography between left and mid image</h3>
 <pre><code>
  [[ 1.69867416e+00  4.05641368e-02 -1.20704547e+03]
  [ 2.37761687e-01  1.43178785e+00 -5.77526132e+02]
  [ 1.65231738e-04  2.09763667e-05  1.00000000e+00]]
 </code></pre>
-<h5>Estimated homography between right and mid image</h5>
+<h3>Estimated homography between right and mid image</h3>
 <pre><code>
 Estimated homography between right and mid image:
  [[ 5.07890256e-01  4.81447356e-03  8.33327316e+02]
  [-2.01050693e-01  7.71031301e-01  3.65449108e+02]
  [-1.21041275e-04 -4.04771370e-06  1.00000000e+00]]
 </code></pre>
-<h6>A.3: Warp the Images</h6>
+</div>
+<div>
+<h2>A.3: Warp the Images</h2>
   <p>In this section, a planar object in the projective plane i.e. image plane is transformed to a
     front facing plane with dimensions of choice. Inverse Warping is used to avoid holes and two 
     different techniques are tested for interpolation.  </p>
@@ -87,8 +90,11 @@ Estimated homography between right and mid image:
         <td>18.3 (Slower)</td>
       </tr>
     </table>
-<h6>A.3: Warp the Images</h6>
-<h7>A.4: Blend the Images into a Mosaic</div>h7>
+<div>
+<h2>A.3: Warp the Images</h2>
+</div>
+<div>
+<h2>A.4: Blend the Images into a Mosaic</h2>
 </div>
 
 <!-- <div class="section">
