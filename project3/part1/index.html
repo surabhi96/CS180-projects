@@ -60,7 +60,6 @@ All results shown below were implemented from scratch in Python.</p> -->
 </code></pre>
 <h3>Estimated homography between right and mid image</h3>
 <pre><code>
-Estimated homography between right and mid image:
  [[ 5.07890256e-01  4.81447356e-03  8.33327316e+02]
  [-2.01050693e-01  7.71031301e-01  3.65449108e+02]
  [-1.21041275e-04 -4.04771370e-06  1.00000000e+00]]
@@ -71,8 +70,8 @@ Estimated homography between right and mid image:
   <p>In this section, a planar object in the projective plane i.e. image plane is transformed to a
     front facing plane with dimensions of choice. Inverse Warping is used to avoid holes and two 
     different techniques are tested for interpolation.  </p>
-    <img src="results/input_1_annotation.jpeg" alt="Input image correspondence" width="600">
-    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp" width="600">
+    <img src="results/input_1_annotation.jpeg" alt="Input image correspondence" width="600" height="400">
+    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp" width="1200" height="400">
     <table border="1" cellspacing="0" cellpadding="5" style="margin-top:10px; border-collapse:collapse; text-align:center;">
       <tr style="background-color:#f0f0f0;">
         <th>Interpolation Method</th>
@@ -96,62 +95,6 @@ Estimated homography between right and mid image:
 <div>
 <h2>A.4: Blend the Images into a Mosaic</h2>
 </div>
-
-<!-- <div class="section">
-  <h2>Part 2: Fun with Frequencies!</h2>
-
-  <h3>Part 2.1: Image Sharpening</h3>
-  <p>Implemented unsharp masking to sharpen images by enhancing their high frequencies.</p>
-  <img src="results/taj.jpeg" alt="Taj sharpened">
-  <p>
-  To evaluate the sharpening approach, the original image was blurred with a Gaussian filter, 
-  and then sharpened again. The sharpening step enhances the blurred image slightly, but it cannot fully recover 
-  the original fine details that were lost during blurring. Shapening only amplifies the edges and sometimes might .
-</p>
-<div>
-    <img src="data/nutmeg.jpg" alt="DoG filters" width="600">
-    <figcaption>Original</figcaption>
-  </div>
-  <div>
-    <img src="results/nutmeg_sharpen.jpeg" alt="DoG filtered image" width="1000">
-    <figcaption>Sharpened (after blur)</figcaption>
-  </div>
-  
-  <h3>Part 2.2: Hybrid Images</h3>
-  <p>By combining low frequencies of one image and high frequencies of another, hybrid images were created. 
-    The factor that helped the most in creating a good high and low frequency image was setting different sigma 
-    values (for convolution) to obtain each of these images Additionally, having different alpha values for the low 
-    and high frequency image was helpful too. For the first image, sigma_low_freq = 7, sigma_high_freq = 5; 
-    For second image, sigma_low_freq = 2, sigma_high_freq = 2. Additionally, the frequency domain of the images are shown. 
-    One can observe that the low frequency images contain the lower frequencies while the high frequency image contains higher frequencies.
-    The occasional high frequency elements in the low frequency image spectrum could be a result of the black borders that are obtained
-    from running the image alignment procedure. </p>
-  <div>
-    <img src="results/hybrid1.jpeg" alt="DoG filters" width="600">
-  </div>
-  <div>
-    <img src="results/hybrid2.jpeg" alt="DoG filtered image" width="1000">
-  </div>
-  <div>
-    <img src="results/freq1.jpeg" alt="DoG filters" width="600">
-  </div>
-  <div>
-    <img src="results/freq2.jpeg" alt="DoG filtered image" width="1000">
-  </div>
-
-  <h3>Part 2.3: Gaussian and Laplacian Stacks</h3>
-  <p>Implemented Gaussian and Laplacian stacks for multi-resolution blending.</p>
-   <div>
-    <img src="results/pyr1.jpeg" alt="DoG filters" width="600">
-  </div>
-  <div>
-    <img src="results/pyr2.jpeg" alt="DoG filtered image" width="1000">
-  </div>
-
-  <h3>Part 2.4: Multiresolution Blending (The Oraple)</h3>
-  <p>Blended two different kinds of pots seamlessly using Laplacian stacks and Gaussian stacks. </p>
-  <img src="results/blend.jpeg" alt="Oraple result">
-</div> -->
 
 </body>
 </html>
