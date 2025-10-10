@@ -13,15 +13,13 @@
 <body>
 
 <h1>Image Warping and Mosaicing - Part I</h1>
-<!-- <p>This project explores 2D convolution, filtering, frequencies, and multi-resolution blending. 
-All results shown below were implemented from scratch in Python.</p> -->
 
 <div class="section">
 <h2>A.1: Shoot the Pictures</h2>
 
 <p>
-  Images are taken from the courtyard of a building complex. The images are good candidates for creating a mosaic as they 
-  naturally contain a lot of corners due to vertical and horizontal line intersections. 
+  Images are taken from the courtyard of a building complex by rotating the camera such that the camera center remains fixed. 
+  The images are good candidates for creating a mosaic as they naturally contain a lot of corners due to vertical and horizontal line intersections. 
 </p>
 
 <img src="data/left.jpeg" alt="left image">
@@ -31,8 +29,8 @@ All results shown below were implemented from scratch in Python.</p> -->
 <div>
 <h2>A.2: Recover Homographies</h2>
 <p>To compute the homography between two images, the correspondences are first marked manually and stored in a txt file.</p>
-<img src="results/corresps_left.jpeg" alt="Gradient magnitude" width="1200" height="400">
-<img src="results/corresps_right.jpeg" alt="Gradient magnitude" width="1200" height="400">
+<img src="results/corresps_left.jpeg" alt="Gradient magnitude" width="2400" height="350">
+<img src="results/corresps_right.jpeg" alt="Gradient magnitude" width="2400" height="350">
 <p>Once 1-1 point to point correspondences are established, homography is computed via least squares. 
   Below is the code snippet along with comments that compute the homography matrix.</p>
 <h3>Compute homography</h3>
@@ -70,8 +68,7 @@ All results shown below were implemented from scratch in Python.</p> -->
   <p>In this section, a planar object in the projective plane i.e. image plane is transformed to a
     front facing plane with dimensions of choice. Inverse Warping is used to avoid holes and two 
     different techniques are tested for interpolation.  </p>
-    <img src="results/input_1_annotation.jpeg" alt="Input image correspondence" width="350" height="400">
-    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp" width="2450" height="400">
+    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp">
     <table border="1" cellspacing="0" cellpadding="5" style="margin-top:10px; border-collapse:collapse; text-align:center;">
       <tr style="background-color:#f0f0f0;">
         <th>Interpolation Method</th>
@@ -81,19 +78,30 @@ All results shown below were implemented from scratch in Python.</p> -->
       <tr>
         <td>Nearest Neighbor</td>
         <td>Pixelated edges, blocky artifacts</td>
-        <td>12.5 (Faster)</td>
+        <td>7.9 (Faster)</td>
       </tr>
       <tr>
         <td>Bilinear Interpolation</td>
         <td>Smoother transitions, better continuity</td>
-        <td>18.3 (Slower)</td>
+        <td>15.3 (Slower)</td>
       </tr>
     </table>
 <div>
-<h2>A.3: Warp the Images</h2>
-</div>
-<div>
 <h2>A.4: Blend the Images into a Mosaic</h2>
+<p> The three images shown in section A.4 were used to create a mosaic. The procedure is briefly explained below </p>
+<ul>
+  <li>Warp each image to the middle or center frame using the computed homographies.</li>
+  <li>Compute the bounds of the canvas that will constitute the output blended image consisting of all the frames by getting the min and max values of the warped image corners. </li>
+  <li>Each warped image will have to be translated according to the min bounds computed above to accomodate the entire extent of the input images within the final output. </li>
+  <li>Compute the corresponding binary masks for each warped image.</li>
+  <li>To blend these warped images seamlessly, two methods are explored - weighted average and feathering technique.</li>
+  <li>Weighted average blends by proportional contribution of overlapping pixels. The seams between the images can be seen slightly. This is exaggerated further for easy viewing.</li>
+  <img src="results/weighted_avg.jpg" alt="weighted average">
+  <img src="results/pre_blend.jpg" alt="weighted average ex">
+  <li>Feathering blends softly near boundaries using gradual fall-off weights. Distance based weights to minimize visible seams as shown below.</li>
+  <img src="results/feather_blend.jpg" alt="Comparison of weighted average and feathering" width="600">
+  <li>It can be noticed that there is some blurring (tree leaves) and ghosting (chairs - center right). This can be attributed to the input data. All attempts were made to not translate the camera center but this cannot be 100% guaranteed with hand held capture. </li>
+</ul>
 </div>
 
 </body>
