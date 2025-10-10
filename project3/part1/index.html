@@ -29,8 +29,13 @@
 <div>
 <h2>A.2: Recover Homographies</h2>
 <p>To compute the homography between two images, the correspondences are first marked manually and stored in a txt file.</p>
-<img src="results/corresps_left.jpeg" alt="Gradient magnitude" width="2400" height="350">
-<img src="results/corresps_right.jpeg" alt="Gradient magnitude" width="2400" height="350">
+<div style="text-align:center;">
+  <img src="results/corresps_left.jpeg" alt="Gradient magnitude" width="2400" height="350">
+  <br>
+  <img src="results/corresps_right.jpeg" alt="Gradient magnitude" width="2400" height="350">
+</div>
+<!-- <img src="results/corresps_left.jpeg" alt="Gradient magnitude" width="2400" height="350">
+<img src="results/corresps_right.jpeg" alt="Gradient magnitude" width="2400" height="350"> -->
 <p>Once 1-1 point to point correspondences are established, homography is computed via least squares. 
   Below is the code snippet along with comments that compute the homography matrix.</p>
 <h3>Compute homography</h3>
@@ -68,7 +73,7 @@
   <p>In this section, a planar object in the projective plane i.e. image plane is transformed to a
     front facing plane with dimensions of choice. Inverse Warping is used to avoid holes and two 
     different techniques are tested for interpolation.  </p>
-    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp">
+    <img src="results/A_3_eg1.jpeg" alt="Comparing nn with bilinear interp" width="2450" height="400">
     <table border="1" cellspacing="0" cellpadding="5" style="margin-top:10px; border-collapse:collapse; text-align:center;">
       <tr style="background-color:#f0f0f0;">
         <th>Interpolation Method</th>
@@ -95,7 +100,7 @@
   <li>Each warped image will have to be translated according to the min bounds computed above to accomodate the entire extent of the input images within the final output. </li>
   <li>Compute the corresponding binary masks for each warped image.</li>
   <li>To blend these warped images seamlessly, two methods are explored - weighted average and feathering technique.</li>
-  <li>Weighted average blends by proportional contribution of overlapping pixels. The seams between the images can be seen slightly. This is exaggerated further for easy viewing.</li>
+  <li>Weighted average blends by proportional contribution of overlapping pixels. The seams between the images can be seen slightly (especially on the left white wall above the fireplace). This is exaggerated further for easy viewing.</li>
   <img src="results/weighted_avg.jpg" alt="weighted average">
   <img src="results/pre_blend.jpg" alt="weighted average ex">
   <li>Feathering blends softly near boundaries using gradual fall-off weights. Distance based weights to minimize visible seams as shown below.</li>
