@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Image Warping and Mosaicing - Part II</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+    h1, h2, h3 { margin-top: 40px; }
+    img { max-width: 400px; margin: 10px; border: 1px solid #ccc; }
+    .section { margin-bottom: 60px; }
+  </style>
+</head>
+<body>
+
+<h1>Image Warping and Mosaicing - Part II</h1>
+
+<div class="section">
+<h2>B.1: Harris Corner Detection</h2>
+
+<p>
+  The images below show the detected Harris corners before and after applying ANMS (Adaptive Non-Maximal Suppression). 
+  The key parameters tuned for Harris corner detection were <code>sigma</code>, <code>min_distance</code>, 
+  and <code>threshold_abs</code>, as used in the following functions:
+  <br><br>
+  <code>h = corner_harris(im, method='eps', sigma=1.5)</code><br>
+  <code>coords = peak_local_max(h, min_distance=10, threshold_abs=0.01 * h.max())</code>
+  <br><br>
+  Better and more stable corners were observed after downsizing the image. 
+  This improvement occurs because downsizing suppresses high-frequency noise and redundant texture variations, 
+  enabling the Harris detector to respond primarily to strong, well-defined structural features. 
+  It also results in a sharper and more distinct autocorrelation surface, 
+  improving the separation between true corners and noisy edge responses.
+  <br><br>
+  Additionally, the image was histogram-equalized and lightly blurred to minimize sunlight effects 
+  and suppress low-frequency illumination artifacts, ensuring consistent corner detection across regions with varying brightness.
+</p>
+
+<img src="results/1.jpeg" alt="left image">
+<img src="results/2.jpeg" alt="middle image">
+</div>
+<div>
+<h2>B.2: Feature Descriptor Extraction</h2>
+<p>The following image shows 6 descriptors which are preceded by original image patch around a feature on the left (40x40), the gaussian blurred outcome and the descriptor itself (8x8).</p>
+<img src="results/3.jpeg" alt="left image">
+</div>
+<div>
+<h2>B.3: Feature Matching</h2>
+<p>
+  The following images show the feature correspondences obtained through feature matching. 
+  RANSAC was then applied to refine these matches and retain the most consistent correspondences 
+  based on a normalized patch SSD threshold of 3.0 pixels.
+</p>
+<img src="results/4.jpeg" alt="Feature matching before RANSAC">
+<img src="results/5.jpeg" alt="Feature matching after RANSAC">
+</div>
+<div>
+<h2>B.4: RANSAC for Robust Homography</h2>
+<p>
+  The following images show the mosaic of three images created using feather blending, as described in Part 1. 
+  While the overall structure aligns well, the mosaic is not perfect as visible ghosting and subtle artifacts remain 
+  in regions with parallax, motion, or varying exposure. 
+  These imperfections can be attributed to slight misalignments, illumination differences, and the linear nature of feather blending, 
+  which may not fully account for geometric inconsistencies or intensity variations across overlapping regions.
+</p>
+<img src="results/6.jpeg" alt="Feature matching before RANSAC">
+<img src="results/7.jpeg" alt="Feature matching after RANSAC">
+</div>
+
+</body>
+</html>
