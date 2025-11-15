@@ -41,14 +41,13 @@
 <p>Model: Same as suggested with hidden units or width = 256, L = 10, lr = 1e-2, batch size = 10000 and Epochs = 40. 
   It was crucial to normalize the input and the rgb value. Without that I was getting a black image.
 </p>
-<img src="results/fox_progress.jpeg" alt="left image">
+<img src="results/fox_progress.jpg" alt="left image">
 <img src="results/fox_psnr.png" alt="left image">
-<img src="results/sunflower_progress.jpeg" alt="left image">
+<img src="results/sunflower_progress.jpg" alt="left image">
 <img src="results/sunflower_psnr.png" alt="left image">
 <p>Here, we see that bigger L value plays a huge impact in capturing the high frequency details whereas the model width appears to be responsible 
   for better capturing structures and coarse features. 
 </p>
-<img src="results/fox_grid.jpeg" alt="left image">
 <img src="results/sunflower_grid.jpeg" alt="left image">
 </div>
 <div>
@@ -61,8 +60,8 @@
   5. Volume rendering function uses the image rendering equation to composite the colors of samples along the rays to each individual pixels of the target image.
   6. The loss function is the mean sqaure error between the volume rendered image and the grund truth image. 
 </p>
-<img src="results/ray_viz.jpeg" alt="Feature matching before RANSAC">
-<img src="results/lego_progress.jpeg" alt="Feature matching after RANSAC">
+<img src="results/ray_viz.jpg" alt="Feature matching before RANSAC">
+<img src="results/lego_progress.jpg" alt="Feature matching after RANSAC">
 <p>
   Model Parameters: As per the recommendation. Average Psnr on validation set = 23.8 in 1000 iterations.
 </p>
