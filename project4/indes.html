@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Neural Radiance Field</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+    h1, h2, h3 { margin-top: 40px; }
+    img { max-width: 400px; margin: 10px; border: 1px solid #ccc; }
+    .section { margin-bottom: 60px; }
+  </style>
+</head>
+<body>
+
+<h1>Neural Radiance Field</h1>
+
+<div class="section">
+<h2>Part 0: Camera Calibration and 3D Scanning</h2>
+
+<p>
+  The images of the object were captured using an iPhone12 at 1x zoom. The final images used for Nerf training were downsampled from the original resolution 
+  of (height, width = 4032, 3024) to (height, width = 512, 384). The camera intrinsics (focal lengths and optical center) were scaled accordingly. 
+</p>
+<figure>
+    <img src="results/part0/input.jpeg" alt="view1">
+    <figcaption>Object</figcaption>
+</figure>
+<figure>
+    <img src="results/part0/v1.jpeg" alt="view1">
+    <figcaption>View 1</figcaption>
+</figure>
+
+<figure>
+    <img src="results/part0/v2.jpeg" alt="view2">
+    <figcaption>View 2</figcaption>
+</figure>
+
+</div>
+<div>
+<h2>Part 1: Fit a Neural Field to a 2D Image</h2>
+<p>Model: Same as suggested with hidden units or width = 256, L = 10, lr = 1e-2, batch size = 10000 and Epochs = 40. 
+  It was crucial to normalize the input and the rgb value. Without that I was getting a black image.
+</p>
+<img src="results/fox_progress.jpeg" alt="left image">
+<img src="results/fox_psnr.png" alt="left image">
+<img src="results/sunflower_progress.jpeg" alt="left image">
+<img src="results/sunflower_psnr.png" alt="left image">
+<p>Here, we see that bigger L value plays a huge impact in capturing the high frequency details whereas the model width appears to be responsible 
+  for better capturing structures and coarse features. 
+</p>
+<img src="results/fox_grid.jpeg" alt="left image">
+<img src="results/sunflower_grid.jpeg" alt="left image">
+</div>
+<div>
+<h2>Part 2: Fit a Neural Radiance Field from Multi-view Images</h2>
+<p>
+  1. Functions like pixel to ray conversion and camera ray to world conversion to obtain rays in the world frame. 
+  2. Dataset class creates randomly sampled batch of rays from all the images in the training set.
+  3. Once the rays are formed, a set of points are uniformly sampled between set near and far bounds. To avoid overfitting, noise is added to these sampled points.
+  4. A Fully connected network is created to encode the radiance field of the scene. The input of the network is 3d position (ray samples) and 3d viewing direction. The output is rgb color and density.
+  5. Volume rendering function uses the image rendering equation to composite the colors of samples along the rays to each individual pixels of the target image.
+  6. The loss function is the mean sqaure error between the volume rendered image and the grund truth image. 
+</p>
+<img src="results/ray_viz.jpeg" alt="Feature matching before RANSAC">
+<img src="results/lego_progress.jpeg" alt="Feature matching after RANSAC">
+<p>
+  Model Parameters: As per the recommendation. Average Psnr on validation set = 23.8 in 1000 iterations.
+</p>
+<img src="results/lego_psnr.png" alt="Feature matching before RANSAC">
+<img src="results/lego_orbit.gif" alt="Feature matching after RANSAC">
+</div>
+<div>
+<h2>Part 2.6: Training with Your Own Data</h2>
+<p>
+  For real images, I downsampled the images and scaled the intrinsics accordingly. A total of 71 images were collected out of which 50 images were set aside
+  for training. However, convergence seemed to be stuck. I plan to test the following to overcome this issue. Downsample the image size further
+  or increase the model layer width or depth. I also plan to try this with a voxel or other representations. Additionally, I would like to try fine sampling
+  after coarse sampling. (I have attached the unsuccessful attemot at reconstructing my image at even 5000 iterations).
+  For the lafufu dataset, things worked well and the parameters I used were as per suggestion. Batch = 10000, Iterations = 10000, near = 0.02, far = 0.5, lr = 1e-5
+</p>
+<img src="results/unsuccessful.jpg" alt="Feature matching before RANSAC">
+<img src="results/lafufu_progress.jpg" alt="Feature matching after RANSAC">
+<img src="results/lafufu_psnr.png" alt="Feature matching after RANSAC">
+</div>
+
+</body>
+</html>
