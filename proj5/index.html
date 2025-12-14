@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Prism.js for VS-Code style syntax highlighting -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+  <style>
+  code, pre {
+    font-family: "Fira Code", Consolas, "JetBrains Mono", Menlo, monospace;
+    font-size: 12px;
+  }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>  <meta charset="UTF-8">
+  <title>Part A: Flow Matching from Scratch!</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; line-height: 1.6; }
+    h1, h2, h3 { margin-top: 40px; }
+    img { max-width: 400px; margin: 10px; border: 1px solid #ccc; }
+    .section { margin-bottom: 60px; }
+  </style>
+</head>
+<body>
+
+<h1>Part 1: Training a Single-Step Denoising UNet</h1>
+<h2>1.1 Implementing the UNet</h2>
+<p>Implemented the Unet using basic building blocks.
+    The structure is as follows where D is the hidden dimension.
+    The first argument is the input dimension and the second is the output dimension. 
+    <pre><code class="language-python">
+    ConvBlock(in_channels, D)
+    DownBlock(D, D)
+    DownBlock(D, 2*D)
+    Flatten()
+    Unflatten(2*D)
+    UpBlock(4*D, D)
+    UpBlock(2*D, D)
+    ConvBlock(2*D, D)
+    nn.Conv2d(D, 1, 3, 1, 1)
+    </code></pre>
+</p>
+<h2>1.2 Using the UNet to Train a Denoiser</h2>
+<p> Pairs of clean and noisy images {x,z} are created for training the denoising unet.
+    In this step, one step denoising is desired such that noisy input z is learnt to map to 
+    clean image x. The following are the training hyperparameters.
+</p>
+<pre><code class="language-python">
+    batch_size = 256
+    learning_rate = 1e-4
+    noise_level = 0.5
+    hidden_dim = 128
+    num_epochs = 5
+</code></pre>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/mnist_noisy_plot.png" alt="view1">
+    <figcaption>Noisy images with differing noise levels</figcaption>
+</figure>
+<h3>1.2.1 Training</h3>
+<p> Training is performed with images having a noise (sigma) of 0.5 </p>
+<figure>
+    <img src="proj5b_results/loss_1.jpeg" alt="view1">
+</figure>
+
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_0_visualization.png" alt="view1">
+    <figcaption>Results on test images from epoch 1 (Left: Clean images (x), Center: Noisy images (z), Right: Denoised images)</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_4_visualization.png" alt="view1">
+    <figcaption>Results on test images from epoch 5 (Left: Clean images (x), Center: Noisy images (z), Right: Denoised images)</figcaption>
+</figure>
+<h3>1.2.2 Out-of-Distribution Testing</h3>
+<p>
+    Here, we want to test how the denoising model performs when the noise level is different from what the network was trained on i.e. sigma = 0.5
+    </p>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/ood_testing.png" alt="view1">
+    <figcaption>(Top) clean image with differing noise levels (Bottom) denoised images</figcaption>
+</figure>
+<h3>1.2.3 Denoising Pure Noise</h3>
+<p>
+    Here, we want to see what happens when we train the network with pairs <code>{x,z}</code> where <code>z</code> is purely noisy or a Gaussian noise. I.e. the network is expected to generate clean images from pure noise without any conditioning of time or class.
+    When the input is pure noise, it has no relationship to the clean image x. Since the loss is <code>E​[ || fθ​(z) − x || **2 ]</code>, the learnt model <code>E(x | z)</code> that minimizes MSE is <code>E(x)</code> as <code>x</code> and <code>z</code> are independent. <code>E(x)</code>, a constant function, is essentially the 
+    mean or the centroid of the clean images which looks like coarse blobs in the middle of the denoised image faintly resembling an average digit or a 0 or 8 as they are the digits that cover most of the pixels compared to other numbers.
+    </p>
+<figure>
+    <img src="proj5b_results/pure_noise_loss.jpeg" alt="view1">
+</figure>
+
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_0_visualization_noisyip.png" alt="view1">
+    <figcaption>Results on test images from epoch 1 (Left: Clean images (x), Center: Noisy images (z), Right: Denoised images)</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_4_visualization_noisyip.png" alt="view1">
+    <figcaption>Results on test images from epoch 5 (Left: Clean images (x), Center: Noisy images (z), Right: Denoised images)</figcaption>
+</figure>
+<p>
+    One can see that different inputs (noisy images) yields similar coarse 
+    denoised images. What this means is that even if the network satisfies 
+    the constraint <code>fθ​(z, t=0) = x-z</code>, there is nothing
+    that defines what the velocity should be at other points in the 
+    image space. The vector field elsewhere can be anything and
+    the loss will be still be low on satisfying that single constraint.
+    This tells us that the vector field is not uniquely defined with such 
+    a constraint or the constraint is insufficient to determine the vector
+    field uniquely. If the vector field is not unique, there is no motion that 
+    can be uniquely determined to reach x from z. Thus from z, the model
+    tends to take path towards the average of inputs or clean images.
+    
+    </p>
+<h1>Part 2: Training a Flow Matching Model</h1>
+<h2>2.1 Adding Time Conditioning to UNet </h2>
+<p>
+    In the previous section, we observed that 1-step denoising does 
+    not yield good results when input is pure noise. That is because
+    the solution is ill defined. Furthermore,  
+    a training pair {x0,x1} produces only one constraint i.e. for a single
+    input (x0,t=0), there is one velocity vector to learn (x1-x0). The velocity
+    at other points in space are not defined. 
+    Therefore, here we add conditioning to get better image outputs 
+    from pure noise. Let us start by time conditioning where we iteratively
+    arrive at the clean image (at time t = 1) from time t = 0 
+    (completely noisy). This allows multiple constraints to be added 
+    at different points in the image space which inturn allows vector 
+    field to be uniquely defined i.e The goal (x1-x0) to learn is still 
+    the same but a single training pair {x0,x1} is able to now produce
+    multiple constraints as the goal (x0-x1) should be satisfied for every
+    xt and not just x0.
+    The learnt global velocity field iteratively guides a noisy 
+    input <code>x0</code> from noisy data distribution 
+    <code>p0(x0)</code> to clean image <code>x1</code> in the clean 
+    data distribution <code>p1(x1)</code>. 
+    This velocity field is a guideline describing how the noisy sample 
+    should move in small steps from <code>x0</code> to <code>x1</code> 
+    by denoising <code>x0</code> in small steps
+    as time t progresses from 0 to 1. 
+    </p>
+    <p>
+    The training objective: given input, <code>(xt, t)</code>, 
+    follow along target velocity <code>(x1-x0)</code>,
+    where <code>xt</code> is the denoised image at time t given by
+    <pre><code> xt = (1-t) * x0 + t * x1 </code></pre> and describes the 
+    position in the vector field from 
+    <code>p0(x0)</code> to <code>p1(x1)</code>. The ground truth velocity 
+    <code>u</code> of <code>xt</code> 
+    at time <code>t</code> is <pre><code> u(xt,t) = d(xt)/dt = x1 - x0 </code></pre>
+    The goal is to learn <code>uθ(xt,t)</code> that approximates <code>u(xt,t)</code>. 
+  </p>
+<h2>2.2 Training the UNet </h2>
+Training objective: Given <code>(xt, t)</code>, follow along <code>(x1-x0)</code>
+    </p>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/time_cond_loss.jpeg" alt="view1">
+</figure>
+<h2>2.3 Sampling from the UNet </h2>
+<p>
+    At the time of sampling, a noisy image that is sampled is expected to 
+    yield a clean image by passing it through the Unet that has learnt the 
+    velocity field during training. At the time of sampling, we don't know the <code>x1</code> that
+    corresponds to our noisy sample. This is why we never know what  
+    clean image we will obtain beforehand. What we do know is that the output 
+    denoised image should be a sample from the data distribution of the clean images or <code>p1(x1)</code>.
+    </p>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_0_timecond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 1</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_4_timecond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 5</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_9_timecond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 10</figcaption>
+</figure>
+<h2>2.4 Adding Class-Conditioning to UNet </h2>
+<p> In addition to time conditioning, if class (label) conditioning 
+    is added, we are able to generate the class or output samples 
+    that belong to the class of our choice. This also yields better 
+    output images as there are more constraint now (adding class factor).
+</p>
+<h2>2.5 Training Class-Conditioned UNet </h2>
+<p>
+    Training objective: Given <code>(xt, t, c)</code>, follow along <code>(x1-x0)</code>
+    </p>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/class_cond_loss.jpeg" alt="view1">
+</figure>
+<h2>2.6 Sampling from Class-Conditioned UNet </h2>
+
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_0_class_cond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 1</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_4_class_cond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 5</figcaption>
+</figure>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_9_class_cond.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 10</figcaption>
+</figure>
+
+<p>
+    To get good results without lr scheduling, lr was reduced from 1e-2 to 1e-3 as ultimately the scheduler's job was to reduce the lr with each epoch. Below is a result from epoch 5. 
+    
+    </p>
+<figure style="display: inline-block; text-align: center;">
+    <img src="proj5b_results/epoch_4_class_cond_nolr.png" alt="view1">
+    <figcaption>Results on noisy test image samples using model from epoch 5</figcaption>
+</figure>
+</div>
+</body>
